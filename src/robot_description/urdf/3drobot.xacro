@@ -6,13 +6,7 @@
 	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
 	name="3drobot_xacro">
 
-	<!--Useful parameters definition.-->
-	<xacro:property name="length_wheel" value="0.03935" />
-	<xacro:property name="radius_wheel" value="0.041275" /> 
-	<xacro:property name="origin_x_Wheel_collision" value="0"/>
-	<xacro:property name="origin_y_Wheel_collision" value="0"/>
-	<xacro:property name="origin_z_Wheel_collision" value="0"/>
-
+	<!--Color description.-->
 	<material name="gray">
 	<color rgba="0.58 0.65 0.65 1"/>
 	</material>
@@ -30,7 +24,7 @@
 			<geometry>
 				<mesh filename="package://robot_description/meshes/base.STL" scale="0.001 0.001 0.001"/>
 			</geometry>
-			<origin rpy="1.5708 0 0" xyz="-0.14364 0.14364 0.0157"/>
+			<origin rpy="0 0 0" xyz="-0.14364 -0.14364 0.0157"/>
 			<material name="gray"/>
 		</visual>
 
@@ -58,9 +52,9 @@
 
 		<collision>
 			<geometry>
-				<cylinder length="${length_wheel}" radius="${radius_wheel}"/>
+				<cylinder length="0.03935" radius="0.041275"/>
 			</geometry>
-			<origin rpy="1.5708 0 0" xyz="${origin_x_Wheel_collision} ${origin_y_Wheel_collision} ${origin_z_Wheel_collision}"/>
+			<origin rpy="1.5708 0 0" xyz="0 0 0"/>
 		</collision>
 
 		<inertial>
@@ -79,9 +73,9 @@
 		</visual>
 			<collision>
 			<geometry>
-				<cylinder length="${length_wheel}" radius="${radius_wheel}"/>			
+				<cylinder length="0.03935" radius="0.041275"/>			
 			</geometry>
-			<origin rpy="1.5708 0 0" xyz="${origin_x_Wheel_collision} ${origin_y_Wheel_collision} ${origin_z_Wheel_collision}"/>
+			<origin rpy="1.5708 0 0" xyz="0 0 0"/>
 		</collision>
 
 		<inertial>
@@ -101,9 +95,9 @@
 
 		<collision>
 			<geometry>
-				<cylinder length="${length_wheel}" radius="${radius_wheel}"/>	
+				<cylinder length="0.03935" radius="0.041275"/>	
 			</geometry>
-			<origin rpy="1.5708 0 0" xyz="${origin_x_Wheel_collision} ${origin_y_Wheel_collision} ${origin_z_Wheel_collision}"/>
+			<origin rpy="1.5708 0 0" xyz="0 0 0"/>
 		</collision>
 
 		<inertial>
@@ -123,9 +117,9 @@
 		
 		<collision>
 			<geometry>
-				<cylinder length="${length_wheel}" radius="${radius_wheel}"/>	
+				<cylinder length="0.03935" radius="0.041275"/>	
 			</geometry>
-			<origin rpy="1.5708 0 0" xyz="${origin_x_Wheel_collision} ${origin_y_Wheel_collision} ${origin_z_Wheel_collision}"/>
+			<origin rpy="1.5708 0 0" xyz="0 0 0"/>
 		</collision>
 
 		<inertial>
@@ -137,7 +131,7 @@
 	<link name="z_axis">
 		<visual>
 			<geometry>
-				<mesh filename="package://robot_description/meshes/ejez.STL" scale="0.001 0.001 0.001"/>
+				<mesh filename="package://robot_description/meshes/z_axis.STL" scale="0.001 0.001 0.001"/>
 			</geometry>
 			<origin rpy="0 0 0" xyz="-0.01 -0.05976 0"/>
 			<material name="gray2"/>>
@@ -177,6 +171,28 @@
 			<inertia ixx="0.00008" ixy="0.0" ixz="-0.00003" iyx="0.0" iyy="0.00008" iyz="0.0" izx="-0.00003" izy="0.0" izz="0.00010"/>
 		</inertial>	
 	</link>
+
+	<link name="imu_link">
+   		<visual>
+     		<geometry>
+       			<box size="0.04 0.02 0.001"/>
+     		</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<material name="gray2"/>>
+		</visual>
+
+		<collision>
+			<geometry>
+       			<box size="0.04 0.02 0.001"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+		</collision>
+
+		<inertial>
+			<mass value="1e-5" />
+	 		<inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+		</inertial>	
+ 	</link>
 
 	<!--Joints definition.-->
 	<joint name="base_to_wheel1" type="continuous">
@@ -222,6 +238,13 @@
 		<axis xyz="0 0 1" />
 	</joint>
 
+	<joint name="imu_joint" type="fixed">
+		<parent link="base_link"/>
+		<child link="imu_link"/>
+		<origin rpy="0 0 0" xyz="0 0 0.079"/>
+		<axis xyz="0 0 1" />
+	</joint>
+	
 	<!-- Drive controller -->
 	<gazebo>
 		<plugin name="omni_steering" filename="libgazebo_ros_planar_move.so">
