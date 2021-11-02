@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 
-  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
+  <!-- Arguments. -->
   <arg name="model" value="$(find robot_description)/urdf/3drobot.xacro"/>
   <arg name="paused" default="false"/>
   <arg name="use_sim_time" default="false"/>
@@ -9,9 +9,9 @@
   <arg name="headless" default="false"/>
   <arg name="debug" default="true"/>
 
-  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+  <!-- Launch Warehouse world. -->
    <include file="$(find gazebo_ros)/launch/empty_world.launch"> 
-     <arg name="world_name" value="$(find robot_description)/worlds/robot.world"/>
+     <arg name="world_name" value="$(find robot_gazebo)/worlds/warehouse_brown.world"/>
     <arg name="debug" value="$(arg debug)" />
     <arg name="gui" value="$(arg gui)" />
     <arg name="paused" value="$(arg paused)"/>

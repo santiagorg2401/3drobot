@@ -24,20 +24,20 @@
 			<geometry>
 				<mesh filename="package://robot_description/meshes/base.STL" scale="0.001 0.001 0.001"/>
 			</geometry>
-			<origin rpy="0 0 0" xyz="-0.14364 -0.14364 0.0157"/>
+			<origin rpy="0 0 0" xyz="-0.14364 -0.14364 0"/>
 			<material name="gray"/>
 		</visual>
 
 		<collision>
 			<geometry>
-				<box size="0.287279 0.287279 0.239"/>
+				<box size="0.287278 0.287278 0.33650"/>
 			</geometry>
-			<origin rpy="0 0 0" xyz="0 0 0.135"/>
+			<origin rpy="0 0 0" xyz="-0.14364 -0.14364 0"/>
 		</collision>
 
 		<inertial>
-			<mass value="1.78"/>
-			<inertia ixx="0.01336" ixy="0.0" ixz="-0.00008" iyx="0.0" iyy="0.01357" iyz="-0.00002" izx="-0.00008" izy="-0.00002" izz="0.01323"/>
+			<mass value="2.55278"/>
+			<inertia ixx="0.01981" ixy="-0.00001" ixz="0.00052" iyx="-0.00001" iyy="0.01998" iyz="0.00040" izx="0.00052" izy="0.00040" izz="0.01846"/>
 		</inertial>
 	</link>
 
@@ -46,7 +46,7 @@
 			<geometry>
 				<mesh filename="package://robot_description/meshes/omniwheel.STL" scale="0.001 0.001 0.001"/>
 			</geometry>
-			<origin rpy="1.5708 0 0" xyz="-0.046275 0.019675 -0.046275"/>
+			<origin rpy="1.5708 0 0" xyz="0 0 0"/>
 			<material name="gray2"/>>
 		</visual>
 
@@ -58,8 +58,8 @@
 		</collision>
 
 		<inertial>
-			<mass value="0.127"/>
-			<inertia ixx="0.00007" ixy="0.0" ixz="0.0" iyy="0.00011" iyz="0.0" izz="0.00007"/>
+			<mass value="0.12550"/>
+			<inertia ixx="0.00006" ixy="0.00000" ixz="0.00000" iyx="0.00000" iyy="0.00006" iyz="0.00000" izx="0.00000" izy="0.00000" izz="0.00010"/>
 		</inertial>
 	</link>
 
@@ -68,7 +68,7 @@
 			<geometry>
 				<mesh filename="package://robot_description/meshes/omniwheel.STL" scale="0.001 0.001 0.001"/>
 			</geometry>
-			<origin rpy="1.5708 0 0" xyz="-0.046275 0.019675 -0.046275"/>
+			<origin rpy="1.5708 0 0" xyz="0 0 10"/>
 			<material name="gray2"/>>
 		</visual>
 			<collision>
@@ -79,8 +79,8 @@
 		</collision>
 
 		<inertial>
-			<mass value="0.127"/>
-			<inertia ixx="0.00007" ixy="0.0" ixz="0.0" iyy="0.00011" iyz="0.0" izz="0.00007"/>
+			<mass value="0.12550"/>
+			<inertia ixx="0.00006" ixy="0.00000" ixz="0.00000" iyx="0.00000" iyy="0.00006" iyz="0.00000" izx="0.00000" izy="0.00000" izz="0.00010"/>
 		</inertial>
 	</link>
 
@@ -89,7 +89,7 @@
 			<geometry>
 				<mesh filename="package://robot_description/meshes/omniwheel.STL" scale="0.001 0.001 0.001"/>
 			</geometry>
-			<origin rpy="1.5708 0 0" xyz="-0.046275 0.019675 -0.046275"/>
+			<origin rpy="1.5708 0 0" xyz="0 0 10"/>
 			<material name="gray2"/>>
 		</visual>
 
@@ -101,8 +101,8 @@
 		</collision>
 
 		<inertial>
-			<mass value="0.127"/>
-			<inertia ixx="0.00007" ixy="0.0" ixz="0.0" iyy="0.00011" iyz="0.0" izz="0.00007"/>
+			<mass value="0.12550"/>
+			<inertia ixx="0.00006" ixy="0.00000" ixz="0.00000" iyx="0.00000" iyy="0.00006" iyz="0.00000" izx="0.00000" izy="0.00000" izz="0.00010"/>
 		</inertial>
 	</link>
 
@@ -111,7 +111,7 @@
 			<geometry>
 				<mesh filename="package://robot_description/meshes/omniwheel.STL" scale="0.001 0.001 0.001"/>
 			</geometry>
-			<origin rpy="1.5708 0 0" xyz="-0.046275 0.019675 -0.046275"/>
+			<origin rpy="1.5708 0 0" xyz="0 0 10"/>
 			<material name="gray2"/>>
 		</visual>
 		
@@ -123,8 +123,8 @@
 		</collision>
 
 		<inertial>
-			<mass value="0.127"/>
-			<inertia ixx="0.00007" ixy="0.0" ixz="0.0" iyy="0.00011" iyz="0.0" izz="0.00007"/>
+			<mass value="0.12550"/>
+			<inertia ixx="0.00006" ixy="0.00000" ixz="0.00000" iyx="0.00000" iyy="0.00006" iyz="0.00000" izx="0.00000" izy="0.00000" izz="0.00010"/>
 		</inertial>
 	</link>
 
@@ -133,7 +133,7 @@
 			<geometry>
 				<mesh filename="package://robot_description/meshes/z_axis.STL" scale="0.001 0.001 0.001"/>
 			</geometry>
-			<origin rpy="0 0 0" xyz="-0.01 -0.05976 0"/>
+			<origin rpy="0 0 0" xyz="0 0 10"/>
 			<material name="gray2"/>>
 		</visual>
 
@@ -145,8 +145,8 @@
 		</collision>
 
 		<inertial>
-			<mass value="0.19422"/>
-			<inertia ixx="0.00274" ixy="0.0" ixz="0.00002" iyx="0.0" iyy="0.00259" iyz="0.0" izx="0.00002" izy="0.0" izz="0.00018"/>
+			<mass value="0.17610"/>
+			<inertia ixx="0.00291" ixy="0.00000" ixz="0.00001" iyx="0.00000" iyy="0.00283" iyz="0.00000" izx="0.00001" izy="0.00000" izz="0.00014"/>
 		</inertial>
 	</link>
 
@@ -155,7 +155,7 @@
 			<geometry>
 				<mesh filename="package://robot_description/meshes/hotend.STL" scale="0.001 0.001 0.001"/>
 			</geometry>
-			<origin rpy="0 0 0" xyz="-0.068 -0.0599 0.006"/>
+			<origin rpy="0 0 0" xyz="0 0 10"/>
 			<material name="gray2"/>>
 		</visual>
 
@@ -167,17 +167,17 @@
 		</collision>
 
 		<inertial>
-			<mass value="0.022"/>
-			<inertia ixx="0.00008" ixy="0.0" ixz="-0.00003" iyx="0.0" iyy="0.00008" iyz="0.0" izx="-0.00003" izy="0.0" izz="0.00010"/>
+			<mass value="0.09737"/>
+			<inertia ixx="0.00009" ixy="0.000000" ixz="-0.00003" iyx="0.00000" iyy="0.00010" iyz="0.00000" izx="-0.00003" izy="0.00000" izz="0.00012"/>
 		</inertial>	
 	</link>
 
 	<link name="imu_link">
-   		<visual>
-     		<geometry>
-       			<box size="0.04 0.02 0.001"/>
-     		</geometry>
-			<origin rpy="0 0 0" xyz="0 0 0"/>
+		<visual>
+			<geometry>
+				<mesh filename="package://robot_description/meshes/imu.STL" scale="0.001 0.001 0.001"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 10"/>
 			<material name="gray2"/>>
 		</visual>
 
@@ -189,8 +189,8 @@
 		</collision>
 
 		<inertial>
-			<mass value="1e-5" />
-	 		<inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+			<mass value="0.00218" />
+	 		<inertia ixx="0.00000" ixy="0.00000" ixz="0.00000" iyx="0.00000" iyy="0.00000" iyz="0.00000" izx="0.00000" izy="0.00000" izz="0.00000"/>
 		</inertial>	
  	</link>
 

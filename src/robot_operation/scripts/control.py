@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #ROS Node which publishes waypoints to make the 3drobot perform squares.
 import numpy as np
