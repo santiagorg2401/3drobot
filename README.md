@@ -20,6 +20,7 @@ $ sudo apt-get install ros-noetic-rosserial
 $ /usr/bin/python3 -m pip install --upgrade pip
 $ pip3 install numpy
 $ pip3 install rospy
+$ pip3 install pycnc
 ```
 
 3. Clone and compile:
@@ -35,6 +36,9 @@ $ roslaunch robot_gazebo display_g.launch
 ```
 
 If Gazebo runs and the 3drobot spawns, then the installation was done succesfully.
+
+### Note.
+For ROS from source installations you will need to overlay this workspace on top of the one that you installed ROS.
 
 ## Trouble?
 Start a new [discussion](https://github.com/santiagorg2401/3drobot/discussions) if you have any question related to the project, but, if you have a technical issue or a bug to report, then please create an [issue](https://github.com/santiagorg2401/3drobot/issues).

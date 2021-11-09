@@ -6,7 +6,6 @@
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32
 from cnc.gcode import GCode, GCodeException
-from cnc.gmachine import GMachineException
 from cnc.coordinates import *
 
 import sys
@@ -91,7 +90,7 @@ class robot_control:
             self.velMsg.linear.y = -velocity
             
         self.velPub.publish(self.velMsg)
-        self.zAxisPosPublisher(delta[2])
+        self.zAxisPosPublisher(delta.z)
         self._position += delta
         time.sleep(lin_time)
 
@@ -116,7 +115,7 @@ class robot_control:
         try:
             gcode = GCode.parse_line(line)
             ans = self.gcodeCommands(gcode, sim)
-        except (GCodeException, GMachineException) as e:
+        except (GCodeException) as e:
             print('ERROR ' + str(e))
             return False
         if ans is not None:
@@ -151,10 +150,10 @@ class robot_control:
         velocity = gcode.get('F', self._velocity)
 
         # Check that the velocity is within operation parameters.
-        if velocity < 1:
-            raise GMachineException("Minimum speed exceeded, minimum speed: 1 mm/sec.")
-        elif velocity > 120:
-            raise GMachineException("Maximum speed exceeded, maximum speed: 120 mm/sec.")
+        if velocity > 120:
+            print("Maximum speed exceeded, maximum speed: 120 mm/sec.")
+            self.velPublisher(0,0)
+            sys.exit()
 
         radius = gcode.radius(Coordinates(0.0, 0.0, 0.0, 0.0),
                               self._convertCoordinates)
@@ -175,10 +174,16 @@ class robot_control:
 
         elif c == 'G4':  # Delay in seconds.
             if not gcode.has('P'):
-                raise GMachineException("P is not specified")
+                print("P is not specified")
+                self.velPublisher(0,0)
+                sys.exit()
+
             pause = gcode.get('P', 0)
             if pause < 0:
-                raise GMachineException("bad delay")
+                print("bad delay")
+                self.velPublisher(0,0)
+                sys.exit()
+
             time.sleep(pause)
 
         elif c == 'G20':  # Switch to inches.
@@ -223,7 +228,9 @@ class robot_control:
                 pass
             elif (sim == 0) or (sim == "false"):
                 if not gcode.has("S"):
-                    raise GMachineException("temperature is not specified")
+                    print("temperature is not specified")
+                    self.velPublisher(0,0)
+                    sys.exit()
 
                 temp = gcode.get('S', 0)
                 self.tempPub.publish(temp)
