@@ -9,8 +9,6 @@ project(robot_gazebo)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   gazebo_ros
-  roscpp
-  rospy
   std_msgs
 )
 

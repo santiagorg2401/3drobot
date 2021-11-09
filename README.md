@@ -2,14 +2,34 @@
 In order to use the 3drobot you will need Ubuntu 20.04 and ROS Noetic full instalation.
 
 ## Installation guide.
-1. Source your terminal.
-2. Run in console:
+### Warning.
+If you are installing in an embedded, be aware that the process may be different.
+
+1. Update packages.
+```console
+$ sudo apt-get update
+$ sudo apt-get upgrade
+```
+2. Install the required dependencies.
+```console
+$ sudo apt install python3-pip
+$ sudo apt-get install git
+$ sudo apt-get install ros-noetic-rosserial-arduino
+$ sudo apt-get install ros-noetic-rosserial
+
+$ /usr/bin/python3 -m pip install --upgrade pip
+$ pip3 install numpy
+$ pip3 install rospy
+```
+
+3. Clone and compile:
 ```console
 $ git clone https://github.com/santiagorg2401/3drobot.git
 $ cd 3drobot/
 $ catkin_make
 ```
-3. Test installation by running.
+
+4. Test installation by running (warning! do not run this command from an embedded).
 ```console
 $ roslaunch robot_gazebo display_g.launch
 ```

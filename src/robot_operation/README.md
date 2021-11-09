@@ -11,4 +11,4 @@ roslaunch robot_operation control.launch file_path:=_insert a valid file path_ s
 file_path: path to .gcode file, example: /home/user/Downloads/test.gcode. Always required.
 sim: 1, 0, true or false. Optional: enabled by default.
 
-Note: temperature commands such as M104 or M109 ar not implemented when sim = true.
+Note: temperature commands such as M104 or M109 ar not enabled when sim = true.

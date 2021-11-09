@@ -4,7 +4,7 @@
 
 # Importations.
 from geometry_msgs.msg import Twist
-from std_msgs.msg import String, Float32
+from std_msgs.msg import Float32
 from cnc.gcode import GCode, GCodeException
 from cnc.gmachine import GMachineException
 from cnc.coordinates import *
@@ -20,14 +20,17 @@ class robot_control:
         rospy.init_node('robot_control', anonymous=True, argv=sys.argv)
 
         # Set up publishers.
-        self.velPub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
-        self.tempPub = rospy.Publisher('/cmd_extTemp', Float32, queue_size=1)
-        self.tempSubs = rospy.Subscriber('/extTemp', Float32, callback=self.tempCallback)
+        self.velPub = rospy.Publisher('/cmd_vel', Twist, queue_size = 1)            # Velocity command for navigation.
+        self.tempPub = rospy.Publisher('/cmd_extTemp', Float32, queue_size = 1)     # Extruder temperature command.
+        self.zaxisPub = rospy.Publisher('cmd_zAxisPos', Float32, queue_size = 1)    # Z axis position command.
+
+        # Set up subscriber.
+        self.tempSubs = rospy.Subscriber('/extTemp', Float32, callback=self.tempCallback)   # Actual extruder temperature.
         
         # Create message objects.
         self.velMsg = Twist()
-        self.gcodeMsg = String()
         self.tempMsg = Float32() 
+        self.zAxisPosMsg = Float32()
 
         # Init class instances.
         self._position = Coordinates(0, 0, 0, 0)                        # TODO Replace with state estimator.
@@ -37,7 +40,7 @@ class robot_control:
         self._convertCoordinates = 1.0                                  # CNC code, milimeters by default.
         self._absoluteCoordinates = True                                # CNC code, absolute coordinates, enabled by default.
         self._plane = None                                              # CNC code, plane.
-        self.linnu = 1                                                  # Line counter.
+        self.linnu = 0                                                  # Line counter.
 
     def tempCallback(self, data):
         # Temperature callback function.
@@ -47,6 +50,11 @@ class robot_control:
         # Temperature publisher.
         self.tempMsg = temp
         self.tempPub.publish(self.tempMsg)
+
+    def zAxisPosPublisher(self, pos):
+        # Z axis position publisher.
+        self.zAxisPosMsg = pos
+        self.zaxisPub.publish(self.zAxisPosMsg)
 
     def velPublisher(self, Vx, Vy):
         # Velocity publisher.
@@ -83,6 +91,7 @@ class robot_control:
             self.velMsg.linear.y = -velocity
             
         self.velPub.publish(self.velMsg)
+        self.zAxisPosPublisher(delta[2])
         self._position += delta
         time.sleep(lin_time)
 
@@ -94,8 +103,6 @@ class robot_control:
             for line in file:
                 line = line.strip()
 
-                self.gcodeMsg = line
-                self.gcodePub.publish(self.gcodeMsg)
                 self.linnu += 1
                 print(self.linnu)
                 if not self.gcodeParser(line, sim):
@@ -124,13 +131,13 @@ class robot_control:
             return None
         answer = None
 
-        # read command
+        # Read command.
         c = gcode.command()
 
         if c is None and gcode.has_coordinates():
             c = 'G1'
 
-        # read parameters
+        # Read parameters.
         if self._absoluteCoordinates:
             coord = gcode.coordinates(self._position - self._local,
                                       self._convertCoordinates)
@@ -143,22 +150,30 @@ class robot_control:
 
         velocity = gcode.get('F', self._velocity)
 
+        # Check that the velocity is within operation parameters.
+        if velocity < 1:
+            raise GMachineException("Minimum speed exceeded, minimum speed: 1 mm/sec.")
+        elif velocity > 120:
+            raise GMachineException("Maximum speed exceeded, maximum speed: 120 mm/sec.")
+
         radius = gcode.radius(Coordinates(0.0, 0.0, 0.0, 0.0),
                               self._convertCoordinates)
 
-        if c == 'G0':  # rapid move
-            # Nema 17 max speed is 600rpm.
-            self.linearMovement(delta, 2830)
-        elif c == 'G1':  # linear interpolation
+        if c == 'G0':  # Rapid move.
+            self.linearMovement(delta, 120)
+
+        elif c == 'G1':  # Linear interpolation.
             self.linearMovement(delta, velocity)
             
-        elif c == 'G2':  # circular interpolation, clockwise
+        elif c == 'G2':  # Circular interpolation, clockwise.
+            # TODO Implement.
             pass
 
-        elif c == 'G3':  # circular interpolation, counterclockwise
+        elif c == 'G3':  # Circular interpolation, counterclockwise.
+            # TODO Implement.
             pass
 
-        elif c == 'G4':  # delay in s
+        elif c == 'G4':  # Delay in seconds.
             if not gcode.has('P'):
                 raise GMachineException("P is not specified")
             pause = gcode.get('P', 0)
@@ -166,25 +181,25 @@ class robot_control:
                 raise GMachineException("bad delay")
             time.sleep(pause)
 
-        elif c == 'G20':  # switch to inches
+        elif c == 'G20':  # Switch to inches.
             self._convertCoordinates = 25.4
 
-        elif c == 'G21':  # switch to mm
+        elif c == 'G21':  # Switch to mm.
             self._convertCoordinates = 1.0
 
-        elif c == 'G28':  # home
+        elif c == 'G28':  # Home.
             pass
 
-        elif c == 'G53':  # switch to machine coords
+        elif c == 'G53':  # Switch to machine coordinates.
             self._local = Coordinates(0.0, 0.0, 0.0, 0.0)
 
-        elif c == 'G90':  # switch to absolute coords
+        elif c == 'G90':  # Switch to absolute coordinates.
             self._absoluteCoordinates = True
 
-        elif c == 'G91':  # switch to relative coords
+        elif c == 'G91':  # Switch to relative coordinates.
             self._absoluteCoordinates = False
 
-        elif c == 'G92':  # switch to local coords
+        elif c == 'G92':  # Switch to local coordinates.
             if gcode.has_coordinates():
                 self._local = self._position - gcode.coordinates(
                     Coordinates(self._position.x - self._local.x,
@@ -195,10 +210,10 @@ class robot_control:
             else:
                 self._local = self._position
 
-        elif c == 'M84':  # disable motors
-            self.velPublisher(0,0,0)
+        elif c == 'M84':  # Disable motors.
+            self.velPublisher(0,0)
 
-        elif c == 'M114':  # get current position
+        elif c == 'M114':  # Get current position.
             p = self.position()
             answer = "X:{} Y:{} Z:{} E:{}".format(p.x, p.y, p.z, p.e)
         
@@ -218,10 +233,10 @@ class robot_control:
                     while(self.extTemp != temp):
                         pass                
 
-        elif c is None:  # command not specified(ie just F was passed)
+        elif c is None:  # Command not specified(ie just F was passed)
             pass
         
-        # save parameters on success
+        # Save parameters on success.
         self._velocity = velocity
         return answer
 

@@ -11,11 +11,34 @@
 #include <std_msgs/Float32.h>
 #include <AccelStepper.h>
 
+#define X_STEP_PIN         A0
+#define X_DIR_PIN          A1
+#define X_ENABLE_PIN       38
+#define X_MIN_PIN           3
+#define X_MAX_PIN           2
+
+#define Y_STEP_PIN         A6
+#define Y_DIR_PIN          A7
+#define Y_ENABLE_PIN       A2
+#define Y_MIN_PIN          14
+#define Y_MAX_PIN          15
+
+#define Z_STEP_PIN         46
+#define Z_DIR_PIN          48
+#define Z_ENABLE_PIN       A8
+#define Z_MIN_PIN          18
+#define Z_MAX_PIN          19
+
+#define E_STEP_PIN         26
+#define E_DIR_PIN          28
+#define E_ENABLE_PIN       24
+
 // Define stepper motors connection pins (Type:driver, STEP, DIR).
-AccelStepper LeftFrontWheel(1, 54, 55);   // Stepper1.
-AccelStepper LeftBackWheel(1, 60, 61);    // Stepper2.
-AccelStepper RightBackWheel(1, 46, 48);   // Stepper3.
-AccelStepper RightFrontWheel(1, 26, 28);  // Stepper4.
+AccelStepper LeftFrontWheel(1, E_STEP_PIN, E_DIR_PIN);  // Stepper1
+AccelStepper LeftBackWheel(1, Z_STEP_PIN, Z_DIR_PIN);   // Stepper2
+AccelStepper RightBackWheel(1, Y_STEP_PIN, Y_DIR_PIN);  // Stepper3
+AccelStepper RightFrontWheel(1, X_STEP_PIN, X_DIR_PIN); // Stepper4
+//AccelStepper Zaxis(1, Z_STEP_PIN, Z_DIR_PIN);                           // Stepper5. 
 
 // Global variables.
 int wheelSpeed = 0, contseg = 0, cont = 1, load = 0;
@@ -24,7 +47,7 @@ int thermistorPin = A13;
 
 float vX = 0, vY = 0;                                                       // Linear speed [m/s].
 float vA = 0;                                                               // Angular speed [rad/s].
-float stepDelay = 0.05;                                                     // Stepper motor step delay [seconds].
+float stepDelay = 0.005;                                                     // Stepper motor step delay [seconds].
 float cmdExtTemp = 0, extTemp = 0;                                          // Command extruder temperature and actual value [°C].
 
 float a1 = pi/4, a2 = 3*pi/4, a3 = 5*pi/4, a4 = 7*pi/4, w = pi, R = 181.07; // Kinematics parameters.
@@ -39,8 +62,8 @@ ros::NodeHandle  nh;
 
 // Callback functions.
 void velocityCB(const geometry_msgs::Twist& vel_msg){
-  vX = vel_msg.linear.x;
-  vY = vel_msg.linear.y;
+  vX = vel_msg.linear.x*1000;
+  vY = vel_msg.linear.y*1000;
 }
 
 void temperatureCB(const std_msgs::Float32& temp_msg){
@@ -59,6 +82,29 @@ void setup(){
   // Set up baud rate.
   Serial.begin(115200);
   nh.getHardware()->setBaud(115200);
+
+  // Pin configuration.
+  
+  pinMode(X_STEP_PIN  , OUTPUT);
+  pinMode(X_DIR_PIN    , OUTPUT);
+  pinMode(X_ENABLE_PIN    , OUTPUT);
+
+  pinMode(Y_STEP_PIN  , OUTPUT);
+  pinMode(Y_DIR_PIN    , OUTPUT);
+  pinMode(Y_ENABLE_PIN    , OUTPUT);
+
+  pinMode(Z_STEP_PIN  , OUTPUT);
+  pinMode(Z_DIR_PIN    , OUTPUT);
+  pinMode(Z_ENABLE_PIN    , OUTPUT);
+
+  pinMode(E_STEP_PIN  , OUTPUT);
+  pinMode(E_DIR_PIN    , OUTPUT);
+  pinMode(E_ENABLE_PIN    , OUTPUT);
+
+  digitalWrite(X_ENABLE_PIN    , LOW);
+  digitalWrite(Y_ENABLE_PIN    , LOW);
+  digitalWrite(Z_ENABLE_PIN    , LOW);
+  digitalWrite(E_ENABLE_PIN    , LOW);
 
   // Initialize ROS node.
   nh.initNode();
@@ -86,6 +132,7 @@ void loop(){
   // Move the robot..
   calculateSpeeds();
   timeNow = millis();
+  
   while (millis() < timeNow + period){
     setExSpeeds();
   }
