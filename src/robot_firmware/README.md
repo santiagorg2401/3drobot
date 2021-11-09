@@ -12,3 +12,6 @@ This firmware was designed to be used with:
 
 ## Flashing.
 To flash the firmware you will need to use the Arduino IDE, then configure it for Arduino Mega and press the upload button.
+
+## Warning.
+If you require to modify the hardware or the firmware, please be aware of the I/O connections and the definitions in the code.

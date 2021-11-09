@@ -11,7 +11,6 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  urdf
 )
 
 ## System dependencies are found with CMake's conventions

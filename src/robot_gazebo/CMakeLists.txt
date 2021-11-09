@@ -1,3 +1,5 @@
+
+ 
 cmake_minimum_required(VERSION 3.0.2)
 project(robot_gazebo)
 
@@ -9,8 +11,6 @@ project(robot_gazebo)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   gazebo_ros
-  roscpp
-  rospy
   std_msgs
 )
 
