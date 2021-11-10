@@ -1,200 +1,187 @@
 <?xml version="1.0"?>
 
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" 
-	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
-	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
-	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
-	name="3drobot_xacro">
+ 	xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+    	xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+    	xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+	name="3drobot">
 
-	<!--Color description.-->
+	<xacro:include filename="$(find robot_description)/urdf/3drobot.gazebo" />
+
 	<material name="gray">
-	<color rgba="0.58 0.65 0.65 1"/>
+		<color rgba="0.58 0.65 0.65 1"/>
 	</material>
 
 	<material name="gray2">
-	<color rgba="0.58 0.65 0.65 1"/>
+		<color rgba="0.58 0.65 0.65 1"/>
 	</material>
 
-	<!--Importations-->
-	<xacro:include filename="$(find robot_description)/urdf/3drobot.gazebo" />
-
-	<!--Links definition.-->
 	<link name="base_link">
-		<visual>
+   		<visual>
 			<geometry>
-				<mesh filename="package://robot_description/meshes/base.STL" scale="0.001 0.001 0.001"/>
-			</geometry>
-			<origin rpy="0 0 0" xyz="-0.14364 -0.14364 0"/>
+      			<mesh filename="package://robot_description/meshes/base.STL" scale="0.001 0.001 0.001"/>
+     		</geometry>
+			<origin rpy="0 0 0" xyz="-0.14364 -0.14364 0.0157"/>
 			<material name="gray"/>
-		</visual>
-
+   		</visual>
 		<collision>
 			<geometry>
-				<box size="0.287278 0.287278 0.33650"/>
+				<box size="0.287279 0.287279 0.239"/>
 			</geometry>
-			<origin rpy="0 0 0" xyz="-0.14364 -0.14364 0"/>
+			<origin rpy="0 0 0" xyz="0 0 0.135"/>
 		</collision>
-
-		<inertial>
-			<mass value="2.55278"/>
-			<inertia ixx="0.01981" ixy="-0.00001" ixz="0.00052" iyx="-0.00001" iyy="0.01998" iyz="0.00040" izx="0.00052" izy="0.00040" izz="0.01846"/>
+			<inertial>
+			<mass value="1.78"/>
+	 		<inertia ixx="0.01336" ixy="0.0" ixz="-0.00008" iyx="0.0" iyy="0.01357" iyz="-0.00002" izx="-0.00008" izy="-0.00002" izz="0.01323"/>
 		</inertial>
-	</link>
+ 	</link>
 
-	<link name="wheel_1">
-		<visual>
-			<geometry>
-				<mesh filename="package://robot_description/meshes/omniwheel.STL" scale="0.001 0.001 0.001"/>
-			</geometry>
-			<origin rpy="1.5708 0 0" xyz="0 0 0"/>
+ 	<link name="wheel_1">
+   		<visual>
+     		<geometry>
+       			<mesh filename="package://robot_description/meshes/omniwheel.STL" scale="0.001 0.001 0.001"/>
+				<scale>0.001 0.001 0.001</scale>
+     		</geometry>
+			<origin rpy="1.5708 0 0" xyz="-0.046275 0.019675 -0.046275"/>
 			<material name="gray2"/>>
 		</visual>
-
 		<collision>
 			<geometry>
 				<cylinder length="0.03935" radius="0.041275"/>
 			</geometry>
 			<origin rpy="1.5708 0 0" xyz="0 0 0"/>
 		</collision>
-
 		<inertial>
-			<mass value="0.12550"/>
-			<inertia ixx="0.00006" ixy="0.00000" ixz="0.00000" iyx="0.00000" iyy="0.00006" iyz="0.00000" izx="0.00000" izy="0.00000" izz="0.00010"/>
+			<mass value="0.127"/>
+	 		<inertia ixx="0.00007" ixy="0.0" ixz="0.0" iyy="0.00011" iyz="0.0" izz="0.00007"/>
 		</inertial>
-	</link>
+ 	</link>
 
-	<link name="wheel_2">
-		<visual>
-			<geometry>
-				<mesh filename="package://robot_description/meshes/omniwheel.STL" scale="0.001 0.001 0.001"/>
-			</geometry>
-			<origin rpy="1.5708 0 0" xyz="0 0 10"/>
+ 	<link name="wheel_2">
+   		<visual>
+     		<geometry>
+       			<mesh filename="package://robot_description/meshes/omniwheel.STL" scale="0.001 0.001 0.001"/>
+				<scale>0.001 0.001 0.001</scale>
+     		</geometry>
+			<origin rpy="1.5708 0 0" xyz="-0.046275 0.019675 -0.046275"/>
 			<material name="gray2"/>>
 		</visual>
-			<collision>
-			<geometry>
-				<cylinder length="0.03935" radius="0.041275"/>			
-			</geometry>
-			<origin rpy="1.5708 0 0" xyz="0 0 0"/>
-		</collision>
-
-		<inertial>
-			<mass value="0.12550"/>
-			<inertia ixx="0.00006" ixy="0.00000" ixz="0.00000" iyx="0.00000" iyy="0.00006" iyz="0.00000" izx="0.00000" izy="0.00000" izz="0.00010"/>
-		</inertial>
-	</link>
-
-	<link name="wheel_3">
-		<visual>
-			<geometry>
-				<mesh filename="package://robot_description/meshes/omniwheel.STL" scale="0.001 0.001 0.001"/>
-			</geometry>
-			<origin rpy="1.5708 0 0" xyz="0 0 10"/>
-			<material name="gray2"/>>
-		</visual>
-
 		<collision>
 			<geometry>
-				<cylinder length="0.03935" radius="0.041275"/>	
+				   <cylinder length="0.03935" radius="0.041275"/>		
 			</geometry>
 			<origin rpy="1.5708 0 0" xyz="0 0 0"/>
 		</collision>
-
 		<inertial>
-			<mass value="0.12550"/>
-			<inertia ixx="0.00006" ixy="0.00000" ixz="0.00000" iyx="0.00000" iyy="0.00006" iyz="0.00000" izx="0.00000" izy="0.00000" izz="0.00010"/>
+			<mass value="0.127"/>
+	 		<inertia ixx="0.00007" ixy="0.0" ixz="0.0" iyy="0.00011" iyz="0.0" izz="0.00007"/>
 		</inertial>
-	</link>
+ 	</link>
 
-	<link name="wheel_4">
-		<visual>
-			<geometry>
-				<mesh filename="package://robot_description/meshes/omniwheel.STL" scale="0.001 0.001 0.001"/>
-			</geometry>
-			<origin rpy="1.5708 0 0" xyz="0 0 10"/>
+ 	<link name="wheel_3">
+   		<visual>
+     		<geometry>
+       			<mesh filename="package://robot_description/meshes/omniwheel.STL" scale="0.001 0.001 0.001"/>
+				<scale>0.001 0.001 0.001</scale>
+     		</geometry>
+			<origin rpy="1.5708 0 0" xyz="-0.046275 0.019675 -0.046275"/>
 			<material name="gray2"/>>
 		</visual>
-		
 		<collision>
 			<geometry>
-				<cylinder length="0.03935" radius="0.041275"/>	
+				   <cylinder length="0.03935" radius="0.041275"/>
 			</geometry>
 			<origin rpy="1.5708 0 0" xyz="0 0 0"/>
 		</collision>
-
 		<inertial>
-			<mass value="0.12550"/>
-			<inertia ixx="0.00006" ixy="0.00000" ixz="0.00000" iyx="0.00000" iyy="0.00006" iyz="0.00000" izx="0.00000" izy="0.00000" izz="0.00010"/>
+			<mass value="0.127"/>
+	 		<inertia ixx="0.00007" ixy="0.0" ixz="0.0" iyy="0.00011" iyz="0.0" izz="0.00007"/>
 		</inertial>
-	</link>
+ 	</link>
+
+ 	<link name="wheel_4">
+   		<visual>
+     		<geometry>
+       			<mesh filename="package://robot_description/meshes/omniwheel.STL" scale="0.001 0.001 0.001"/>
+				<scale>0.001 0.001 0.001</scale>
+     		</geometry>
+			<origin rpy="1.5708 0 0" xyz="-0.046275 0.019675 -0.046275"/>
+			<material name="gray2"/>>
+		</visual>
+		<collision>
+			<geometry>
+				   <cylinder length="0.03935" radius="0.041275"/>
+			</geometry>
+			<origin rpy="1.5708 0 0" xyz="0 0 0"/>
+		</collision>
+		<inertial>
+			<mass value="0.127"/>
+	 		<inertia ixx="0.00007" ixy="0.0" ixz="0.0" iyy="0.00011" iyz="0.0" izz="0.00007"/>
+		</inertial>
+ 	</link>
 
 	<link name="z_axis">
-		<visual>
-			<geometry>
-				<mesh filename="package://robot_description/meshes/z_axis.STL" scale="0.001 0.001 0.001"/>
-			</geometry>
-			<origin rpy="0 0 0" xyz="0 0 10"/>
+   		<visual>
+     		<geometry>
+       			<mesh filename="package://robot_description/meshes/ejez.STL" scale="0.001 0.001 0.001"/>
+				<scale>0.001 0.001 0.001</scale>
+     		</geometry>
+			<origin rpy="0 0 0" xyz="-0.01 -0.05976 0"/>
 			<material name="gray2"/>>
 		</visual>
-
 		<collision>
 			<geometry>
-				<box size="0.0565 0.119526 0.323"/>
+       			<box size="0.0565 0.119526 0.323"/>
 			</geometry>
 			<origin rpy="0 0 0" xyz="0.027 0 0.163"/>
 		</collision>
-
 		<inertial>
-			<mass value="0.17610"/>
-			<inertia ixx="0.00291" ixy="0.00000" ixz="0.00001" iyx="0.00000" iyy="0.00283" iyz="0.00000" izx="0.00001" izy="0.00000" izz="0.00014"/>
+			<mass value="0.19422"/>
+	 		<inertia ixx="0.00274" ixy="0.0" ixz="0.00002" iyx="0.0" iyy="0.00259" iyz="0.0" izx="0.00002" izy="0.0" izz="0.00018"/>
 		</inertial>
-	</link>
+ 	</link>
 
 	<link name="hotend">
-		<visual>
-			<geometry>
-				<mesh filename="package://robot_description/meshes/hotend.STL" scale="0.001 0.001 0.001"/>
-			</geometry>
-			<origin rpy="0 0 0" xyz="0 0 10"/>
+   		<visual>
+     		<geometry>
+       			<mesh filename="package://robot_description/meshes/hotend.STL" scale="0.001 0.001 0.001"/>
+				<scale>0.001 0.001 0.001</scale>
+     		</geometry>
+			<origin rpy="0 0 0" xyz="-0.068 -0.0599 0.006"/>
 			<material name="gray2"/>>
 		</visual>
-
 		<collision>
 			<geometry>
-				<box size="0.085329 0.119724 0.090945"/>
+       			<box size="0.085329 0.119724 0.090945"/>
 			</geometry>
 			<origin rpy="0 0 0" xyz="0 0 0.039215"/>
 		</collision>
-
 		<inertial>
-			<mass value="0.09737"/>
-			<inertia ixx="0.00009" ixy="0.000000" ixz="-0.00003" iyx="0.00000" iyy="0.00010" iyz="0.00000" izx="-0.00003" izy="0.00000" izz="0.00012"/>
+			<mass value="0.022"/>
+	 		<inertia ixx="0.00008" ixy="0.0" ixz="-0.00003" iyx="0.0" iyy="0.00008" iyz="0.0" izx="-0.00003" izy="0.0" izz="0.00010"/>
 		</inertial>	
-	</link>
+ 	</link>
 
 	<link name="imu_link">
-		<visual>
-			<geometry>
-				<mesh filename="package://robot_description/meshes/imu.STL" scale="0.001 0.001 0.001"/>
-			</geometry>
-			<origin rpy="0 0 0" xyz="0 0 10"/>
+   		<visual>
+     		<geometry>
+       			<box size="0.04 0.02 0.001"/>
+     		</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
 			<material name="gray2"/>>
 		</visual>
-
 		<collision>
 			<geometry>
        			<box size="0.04 0.02 0.001"/>
 			</geometry>
 			<origin rpy="0 0 0" xyz="0 0 0"/>
 		</collision>
-
 		<inertial>
-			<mass value="0.00218" />
-	 		<inertia ixx="0.00000" ixy="0.00000" ixz="0.00000" iyx="0.00000" iyy="0.00000" iyz="0.00000" izx="0.00000" izy="0.00000" izz="0.00000"/>
+			<mass value="1e-5" />
+	 		<inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
 		</inertial>	
  	</link>
 
-	<!--Joints definition.-->
 	<joint name="base_to_wheel1" type="continuous">
 		<parent link="base_link"/>
 		<child link="wheel_1"/>
@@ -243,17 +230,17 @@
 		<child link="imu_link"/>
 		<origin rpy="0 0 0" xyz="0 0 0.079"/>
 		<axis xyz="0 0 1" />
-	</joint>
-	
+ 	</joint>
+
 	<!-- Drive controller -->
 	<gazebo>
-		<plugin name="omni_steering" filename="libgazebo_ros_planar_move.so">
+		<plugin name="omni_steering" filename="libgazebo_ros_planar_move.so">	
 			<commandTopic>cmd_vel</commandTopic>
 			<odometrytopic>odom</odometrytopic>
 			<odometryFrame>odom</odometryFrame>
 			<odometryRate>50.0</odometryRate>
 			<robotBaseFrame>base_link</robotBaseFrame>
-			<publishTF>false</publishTF>
+			<publishTF>true</publishTF>
 		</plugin>
 	</gazebo>
 </robot>
