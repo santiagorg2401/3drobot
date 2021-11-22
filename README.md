@@ -1,5 +1,5 @@
 # Welcome to the 3drobot documentation.
-In order to use the 3drobot you will need Ubuntu 20.04 and ROS Noetic full instalation.
+In order to use the 3drobot you will need Ubuntu 20.04, Python 3 and ROS Noetic.
 
 ## Installation guide.
 ### Warning.
@@ -42,3 +42,8 @@ For ROS from source installations you will need to overlay this workspace on top
 
 ## Trouble?
 Start a new [discussion](https://github.com/santiagorg2401/3drobot/discussions) if you have any question related to the project, but, if you have a technical issue or a bug to report, then please create an [issue](https://github.com/santiagorg2401/3drobot/issues).
+
+## Authors.
+- [Óscar David Díaz Santos.](https://github.com/oscar2001ds)
+- [Diana Sofía Villaraga Gañán.](https://github.com/Dianavillarraga)
+- [Santiago Restrepo García.](https://github.com/santiagorg2401)
