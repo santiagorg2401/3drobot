@@ -12,6 +12,7 @@
 #include <ros.h>
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/Float32.h>
+#include <std_msgs/Int8.h>
 #include <AccelStepper.h>
 #include <thermistor.h>
 
@@ -50,18 +51,19 @@ int r = 48;                                                                 // W
 int thermistorPin = A13;
 int weightPin = A14;
 
+int powerStage = 1, powerPin = 32;
+
 float vX = 0, vY = 0;                                                       // Linear speed [m/s].
 float vA = 0;                                                               // Angular speed [rad/s].
 float stepDelay = 0.005;                                                     // Stepper motor step delay [seconds].
 float cmdExtTemp = 0, extTemp = 0;                                          // Command extruder temperature and actual value [°C].
 float weight = 0;
-
+int period = stepDelay*1000;
 float a1 = pi/4, a2 = 3*pi/4, a3 = 5*pi/4, a4 = 7*pi/4, w = pi, R = 181.07; // Kinematics parameters.
 float v1 = 0, v2 = 0, v3 = 0, v4 = 0;                                       //Wheel angular speed [rad/s].
 float vs1 = 0, vs2 = 0, vs3 = 0, vs4 = 0;                                   //Wheel angular speed [step/s].
 
 unsigned long timeNow = 0;
-int period = stepDelay*1000;
 
 // Set up ROS node.
 ros::NodeHandle  nh;
@@ -79,9 +81,14 @@ void temperatureCB(const std_msgs::Float32& temp_msg){
   cmdExtTemp = temp_msg.data;
 }
 
+void powerStageCB(const std_msgs::Int8& powerStageMsg){
+  powerStage = powerStageMsg.data;
+}
+
 // Set up subscibers.
 ros::Subscriber<geometry_msgs::Twist> vel_sub("/cmd_vel", &velocityCB);
 ros::Subscriber<std_msgs::Float32> temp_sub("/cmd_extTemp", &temperatureCB);
+ros::Subscriber<std_msgs::Int8> power_sub("/powerStage", &powerStageCB);
 
 // Set up publishers.
 std_msgs::Float32 extTempMsg;
@@ -130,12 +137,18 @@ void setup(){
   LeftBackWheel.setMaxSpeed(2000);
   RightBackWheel.setMaxSpeed(2000);
   RightFrontWheel.setMaxSpeed(2000);
+
+  pinMode(powerPin, OUTPUT);
+  digitalWrite(powerPin, HIGH);
 }
 
 void loop(){
+  setPowerStatus();
+  
   // Subscribe from /cmd_vel and /cmd_extTemp.
   nh.subscribe(vel_sub);
   nh.subscribe(temp_sub);
+  nh.subscribe(power_sub);
 
   getTemperature();
   getWeight();
@@ -151,6 +164,13 @@ void loop(){
   nh.spinOnce();
 }
 
+void setPowerStatus(){
+  if (powerStage == 0){
+    digitalWrite(powerPin, LOW);
+  } else{
+    digitalWrite(powerPin, HIGH);
+  }
+}
 void getTemperature(){
   // Get extruder temperature and publish it in /extTemp.
   extTemp = therm1.analog2temp();

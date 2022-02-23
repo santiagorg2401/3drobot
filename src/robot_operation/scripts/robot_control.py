@@ -3,8 +3,10 @@
 # ROS Node that handles the CNC Code parsing and publishes the required commands such as velocity and temperature to print a component.
 
 # Importations.
+from sympy import false
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32
+from std_msgs.msg import Int8
 from cnc.gcode import GCode, GCodeException
 from cnc.coordinates import *
 
@@ -21,15 +23,17 @@ class robot_control:
         # Set up publishers.
         self.velPub = rospy.Publisher('/cmd_vel', Twist, queue_size = 1)            # Velocity command for navigation.
         self.tempPub = rospy.Publisher('/cmd_extTemp', Float32, queue_size = 1)     # Extruder temperature command.
-        self.zaxisPub = rospy.Publisher('cmd_zAxisPos', Float32, queue_size = 1)    # Z axis position command.
+        self.zaxisPub = rospy.Publisher('/cmd_zAxisPos', Float32, queue_size = 1)    # Z axis position command.
+        self.powerStagePub = rospy.Publisher('/powerStage', Int8, queue_size = 1)
 
         # Set up subscriber.
         self.tempSubs = rospy.Subscriber('/extTemp', Float32, callback=self.tempCallback)   # Actual extruder temperature.
         
         # Create message objects.
         self.velMsg = Twist()
-        self.tempMsg = Float32() 
+        self.tempMsg = Float32()
         self.zAxisPosMsg = Float32()
+        self.powerStageMsg = Int8()
 
         # Init class instances.
         self._position = Coordinates(0, 0, 0, 0)                        # TODO Replace with state estimator.
@@ -55,6 +59,11 @@ class robot_control:
         self.zAxisPosMsg = pos
         self.zaxisPub.publish(self.zAxisPosMsg)
 
+    def powerStagePublisher(self, state):
+        # powerStage commands publisher.
+        self.powerStageMsg = state
+        self.powerStagePub.publish(self.powerStageMsg)
+
     def velPublisher(self, Vx, Vy):
         # Velocity publisher.
         self.velMsg.linear.x = Vx
@@ -64,6 +73,8 @@ class robot_control:
         self.velMsg.angular.x = 0
         self.velMsg.angular.y = 0
         self.velMsg.angular.z = 0
+
+        self.powerStagePublisher(0)
 
         self.velPub.publish(self.velMsg)
 
@@ -217,6 +228,7 @@ class robot_control:
 
         elif c == 'M84':  # Disable motors.
             self.velPublisher(0,0)
+            self.powerStagePublisher(1)
 
         elif c == 'M114':  # Get current position.
             p = self.position()
