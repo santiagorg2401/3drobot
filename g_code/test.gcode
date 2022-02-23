@@ -1,0 +1,26 @@
+M82 ;absolute extrusion mode
+; Ender 3 Custom Start G-code
+G92 E0 ; Reset Extruder
+G28 ; Home all axes
+
+G1 X-100 Y0 F50
+G1 X-100 Y50
+G1 X0 Y50
+G1 X-100 Y50
+G1 X-100 Y75
+G1 X0 Y75
+G1 X0 Y125
+G1 X-40 Y125
+G1 X-40 Y75
+G1 X-40 Y125
+G1 X-100 Y125
+G1 X-100 Y150
+G1 X0 Y150
+G1 X0 Y200
+G1 X-100 Y200
+G1 X-100 Y150
+G1 X-100 Y200
+
+
+
+M84
