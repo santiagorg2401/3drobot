@@ -3,7 +3,6 @@
 # ROS Node that handles the CNC Code parsing and publishes the required commands such as velocity and temperature to print a component.
 
 # Importations.
-from sympy import false
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float32
 from std_msgs.msg import Int8
@@ -73,8 +72,6 @@ class robot_control:
         self.velMsg.angular.x = 0
         self.velMsg.angular.y = 0
         self.velMsg.angular.z = 0
-
-        self.powerStagePublisher(0)
 
         self.velPub.publish(self.velMsg)
 
@@ -228,7 +225,6 @@ class robot_control:
 
         elif c == 'M84':  # Disable motors.
             self.velPublisher(0,0)
-            self.powerStagePublisher(1)
 
         elif c == 'M114':  # Get current position.
             p = self.position()
@@ -284,11 +280,13 @@ if __name__ == "__main__":
             if (op == "exit"):
                 sys.exit
 
+        rc.powerStagePublisher(0)
         print("\nPrinting file on: " + file_path) 
         file = open(file_path, 'r')
         rc.gcodeReader(file, sim)
 
         print("\nFile printed.")
+        rc.powerStagePublisher(1)
         
     except rospy.ROSInterruptException: 
         pass
