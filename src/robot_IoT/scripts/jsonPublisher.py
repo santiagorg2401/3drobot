@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 # Importations.
-from geometry_msgs.msg import Twist
-from std_msgs.msg import Float32
+from std_msgs.msg import Int16
 from std_msgs.msg import String
 
 import rospy
@@ -16,8 +15,8 @@ class robot_IoT:
         rospy.init_node('robot_IoT', anonymous=True)
 
         # Set up subscriber.
-        self.tempSubs = rospy.Subscriber('/extTemp', Float32, callback=self.tempCallback)    # Actual extruder temperature.
-        self.weightSubs = rospy.Subscriber('/weight', Float32, callback=self.weightCallback) # Filament weight.
+        self.tempSubs = rospy.Subscriber('/extTemp', Int16, callback=self.tempCallback)    # Actual extruder temperature.
+        self.weightSubs = rospy.Subscriber('/weight', Int16, callback=self.weightCallback) # Filament weight.
 
         # Set up publisher.
         self.jsonMsg = rospy.Publisher('/jsonMsg', String, queue_size=10)

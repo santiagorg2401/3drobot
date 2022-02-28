@@ -11,8 +11,8 @@
 // Import libraries.
 #include <ros.h>
 #include <geometry_msgs/Twist.h>
-#include <std_msgs/Float32.h>
-#include <std_msgs/Int8.h>
+#include <std_msgs/Int16.h>
+#include <std_msgs/Bool.h>
 #include <AccelStepper.h>
 #include <thermistor.h>
 
@@ -51,13 +51,14 @@ int r = 48;                                                                 // W
 int thermistorPin = A13;
 int weightPin = A14;
 
-int powerStage = 1, powerPin = 32;
+int powerPin = 32;
+bool powerStage = true;
 
 float vX = 0, vY = 0;                                                       // Linear speed [m/s].
 float vA = 0;                                                               // Angular speed [rad/s].
 float stepDelay = 0.005;                                                     // Stepper motor step delay [seconds].
-float cmdExtTemp = 0, extTemp = 0;                                          // Command extruder temperature and actual value [°C].
-float weight = 0;
+unsigned int cmdExtTemp = 0, extTemp = 0;                                          // Command extruder temperature and actual value [°C].
+unsigned int weight = 0;
 int period = stepDelay*1000;
 float a1 = pi/4, a2 = 3*pi/4, a3 = 5*pi/4, a4 = 7*pi/4, w = pi, R = 181.07; // Kinematics parameters.
 float v1 = 0, v2 = 0, v3 = 0, v4 = 0;                                       //Wheel angular speed [rad/s].
@@ -77,24 +78,24 @@ void velocityCB(const geometry_msgs::Twist& vel_msg){
   vY = vel_msg.linear.y*1000;
 }
 
-void temperatureCB(const std_msgs::Float32& temp_msg){
+void temperatureCB(const std_msgs::Int16& temp_msg){
   cmdExtTemp = temp_msg.data;
 }
 
-void powerStageCB(const std_msgs::Int8& powerStageMsg){
+void powerStageCB(const std_msgs::Bool& powerStageMsg){
   powerStage = powerStageMsg.data;
 }
 
 // Set up subscibers.
 ros::Subscriber<geometry_msgs::Twist> vel_sub("/cmd_vel", &velocityCB);
-ros::Subscriber<std_msgs::Float32> temp_sub("/cmd_extTemp", &temperatureCB);
-ros::Subscriber<std_msgs::Int8> power_sub("/powerStage", &powerStageCB);
+ros::Subscriber<std_msgs::Int16> temp_sub("/cmd_extTemp", &temperatureCB);
+ros::Subscriber<std_msgs::Bool> power_sub("/powerStage", &powerStageCB);
 
 // Set up publishers.
-std_msgs::Float32 extTempMsg;
+std_msgs::Int16 extTempMsg;
 ros::Publisher extTempPub("/extTemp", &extTempMsg);
 
-std_msgs::Float32 weightMsg;
+std_msgs::Int16 weightMsg;
 ros::Publisher weightPub("/weight", &weightMsg);
 
 void setup(){
@@ -165,7 +166,7 @@ void loop(){
 }
 
 void setPowerStatus(){
-  if (powerStage == 0){
+  if (powerStage == false){
     digitalWrite(powerPin, LOW);
   } else{
     digitalWrite(powerPin, HIGH);

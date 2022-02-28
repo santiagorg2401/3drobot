@@ -4,8 +4,8 @@
 
 # Importations.
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Float32
-from std_msgs.msg import Int8
+from std_msgs.msg import Int16
+from std_msgs.msg import Bool
 from cnc.gcode import GCode, GCodeException
 from cnc.coordinates import *
 
@@ -21,18 +21,18 @@ class robot_control:
 
         # Set up publishers.
         self.velPub = rospy.Publisher('/cmd_vel', Twist, queue_size = 1)            # Velocity command for navigation.
-        self.tempPub = rospy.Publisher('/cmd_extTemp', Float32, queue_size = 1)     # Extruder temperature command.
-        self.zaxisPub = rospy.Publisher('/cmd_zAxisPos', Float32, queue_size = 1)    # Z axis position command.
-        self.powerStagePub = rospy.Publisher('/powerStage', Int8, queue_size = 1)
+        self.tempPub = rospy.Publisher('/cmd_extTemp', Int16, queue_size = 1)     # Extruder temperature command.
+        self.zaxisPub = rospy.Publisher('/cmd_zAxisPos', Int16, queue_size = 1)    # Z axis position command.
+        self.powerStagePub = rospy.Publisher('/powerStage', Bool, queue_size = 1)
 
         # Set up subscriber.
-        self.tempSubs = rospy.Subscriber('/extTemp', Float32, callback=self.tempCallback)   # Actual extruder temperature.
+        self.tempSubs = rospy.Subscriber('/extTemp', Int16, callback=self.tempCallback)   # Actual extruder temperature.
         
         # Create message objects.
         self.velMsg = Twist()
-        self.tempMsg = Float32()
-        self.zAxisPosMsg = Float32()
-        self.powerStageMsg = Int8()
+        self.tempMsg = Int16()
+        self.zAxisPosMsg = Int16()
+        self.powerStageMsg = Bool()
 
         # Init class instances.
         self._position = Coordinates(0, 0, 0, 0)                        # TODO Replace with state estimator.
@@ -280,13 +280,13 @@ if __name__ == "__main__":
             if (op == "exit"):
                 sys.exit
 
-        rc.powerStagePublisher(0)
+        rc.powerStagePublisher(False)
         print("\nPrinting file on: " + file_path) 
         file = open(file_path, 'r')
         rc.gcodeReader(file, sim)
 
         print("\nFile printed.")
-        rc.powerStagePublisher(1)
+        rc.powerStagePublisher(True)
         
     except rospy.ROSInterruptException: 
         pass
