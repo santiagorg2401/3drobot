@@ -6,8 +6,9 @@
         <include file="$(find robot_gazebo)/launch/display_g.launch" />
     </group>
     <group unless="$(arg sim)">
-        <node name="serial_node" pkg="rosserial_python" type="serial_node.py" args="_port:=/dev/ttyACM0 _baud:=115200" output="screen"/>
-        <node name="serial_node" pkg="rosserial_python" type="serial_node.py" args="_port:=/dev/ttyUSB0 _baud:=115200" output="screen"/>
+        <node name="serial_node_mega00" pkg="rosserial_python" type="serial_node.py" args="_port:=/dev/ttyACM0 _baud:=115200" output="screen"/>
+        <node name="serial_node_nano" pkg="rosserial_python" type="serial_node.py" args="_port:=/dev/ttyUSB0 _baud:=115200" output="screen"/>
+        <node name="jsonPublisher" pkg="robot_Iot" type="jsonPublisher.py"/>
     </group> 
     <node name="robot_control" pkg="robot_operation" type="robot_control.py" args="$(arg file_path) $(arg sim)" output="screen"/>
 </launch>

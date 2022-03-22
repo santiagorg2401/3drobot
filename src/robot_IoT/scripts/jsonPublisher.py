@@ -3,10 +3,12 @@
 # Importations.
 from std_msgs.msg import Int16
 from std_msgs.msg import String
-
+from std_msgs.msg import Bool
 import rospy
 import json
 import datetime
+import requests
+
 
 class robot_IoT:
     def __init__(self):
@@ -15,11 +17,24 @@ class robot_IoT:
         rospy.init_node('robot_IoT', anonymous=True)
 
         # Set up subscriber.
-        self.tempSubs = rospy.Subscriber('/extTemp', Int16, callback=self.tempCallback)    # Actual extruder temperature.
-        self.weightSubs = rospy.Subscriber('/weight', Int16, callback=self.weightCallback) # Filament weight.
+        # Actual extruder temperature.
+        self.tempSubs = rospy.Subscriber(
+            '/extTemp', Int16, callback=self.tempCallback)
+        # Filament weight.
+        self.weightSubs = rospy.Subscriber(
+            '/weight', Int16, callback=self.weightCallback)
+        self.powerStageSub = rospy.Subscriber(
+            '/powerStage', Bool, callback=self.poweStageCallback)
 
         # Set up publisher.
         self.jsonMsg = rospy.Publisher('/jsonMsg', String, queue_size=10)
+
+        self.api_url = "http://things.ubidots.com/api/v1.6/devices/3drobot/?token=BBFF-yB97DF1ZzLZbBnUR0RsVPbzqKEA3iH"
+
+    def powerStageCallback(self, data):
+        self.powerStage = data.data
+
+        self.publishJson()
 
     def tempCallback(self, data):
         # Temperature callback function.
@@ -37,18 +52,20 @@ class robot_IoT:
         crrt_time = datetime.datetime.now()
 
         x = {
-        "Bot": 1,
-        "Extruder temperature": self.extTemp,
-        "Filament weight": self.weight,
-        "Date" : str(crrt_time)
+            "Bot": 1,
+            "Extruder temperature": self.extTemp,
+            "Filament weight": self.weight,
+            "Power stage status": self.powerStage,
+            "Date": str(crrt_time)
         }
 
-        
         jsonMsg = json.dumps(x)
+
+        response = requests.post(self.api_url, data=jsonMsg)
+        
         self.jsonMsg.publish(jsonMsg)
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     riot = robot_IoT()
     rospy.spin()
-
-

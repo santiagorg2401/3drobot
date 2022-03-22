@@ -12,9 +12,7 @@
 #include <ros.h>
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/Int16.h>
-#include <std_msgs/Bool.h>
 #include <AccelStepper.h>
-#include <thermistor.h>
 
 #define X_STEP_PIN         A0
 #define X_DIR_PIN          A1
@@ -48,17 +46,10 @@ AccelStepper RightFrontWheel(1, X_STEP_PIN, X_DIR_PIN); // Stepper4
 // Global variables.
 int wheelSpeed = 0, contseg = 0, cont = 1, load = 0;
 int r = 48;                                                                 // Wheel radius.r
-int thermistorPin = A13;
-int weightPin = A14;
-
-int powerPin = 32;
-bool powerStage = true;
 
 float vX = 0, vY = 0;                                                       // Linear speed [m/s].
 float vA = 0;                                                               // Angular speed [rad/s].
 float stepDelay = 0.005;                                                     // Stepper motor step delay [seconds].
-unsigned int cmdExtTemp = 0, extTemp = 0;                                          // Command extruder temperature and actual value [°C].
-unsigned int weight = 0;
 int period = stepDelay*1000;
 float a1 = pi/4, a2 = 3*pi/4, a3 = 5*pi/4, a4 = 7*pi/4, w = pi, R = 181.07; // Kinematics parameters.
 float v1 = 0, v2 = 0, v3 = 0, v4 = 0;                                       //Wheel angular speed [rad/s].
@@ -69,34 +60,14 @@ unsigned long timeNow = 0;
 // Set up ROS node.
 ros::NodeHandle  nh;
 
-// Set up thermistor.
-thermistor therm1(thermistorPin, 7);
-
 // Callback functions.
 void velocityCB(const geometry_msgs::Twist& vel_msg){
   vX = vel_msg.linear.x*1000;
   vY = vel_msg.linear.y*1000;
 }
 
-void temperatureCB(const std_msgs::Int16& temp_msg){
-  cmdExtTemp = temp_msg.data;
-}
-
-void powerStageCB(const std_msgs::Bool& powerStageMsg){
-  powerStage = powerStageMsg.data;
-}
-
 // Set up subscibers.
 ros::Subscriber<geometry_msgs::Twist> vel_sub("/cmd_vel", &velocityCB);
-ros::Subscriber<std_msgs::Int16> temp_sub("/cmd_extTemp", &temperatureCB);
-ros::Subscriber<std_msgs::Bool> power_sub("/powerStage", &powerStageCB);
-
-// Set up publishers.
-std_msgs::Int16 extTempMsg;
-ros::Publisher extTempPub("/extTemp", &extTempMsg);
-
-std_msgs::Int16 weightMsg;
-ros::Publisher weightPub("/weight", &weightMsg);
 
 void setup(){
   // Set up baud rate.
@@ -129,30 +100,16 @@ void setup(){
   // Initialize ROS node.
   nh.initNode();
 
-  // Advertise publishers.
-  nh.advertise(extTempPub);
-  nh.advertise(weightPub);
-
   // Set maximum speeds per motor.
   LeftFrontWheel.setMaxSpeed(2000);
   LeftBackWheel.setMaxSpeed(2000);
   RightBackWheel.setMaxSpeed(2000);
   RightFrontWheel.setMaxSpeed(2000);
-
-  pinMode(powerPin, OUTPUT);
-  digitalWrite(powerPin, HIGH);
 }
 
 void loop(){
-  setPowerStatus();
-  
   // Subscribe from /cmd_vel and /cmd_extTemp.
   nh.subscribe(vel_sub);
-  nh.subscribe(temp_sub);
-  nh.subscribe(power_sub);
-
-  getTemperature();
-  getWeight();
   
   // Move the robot..
   calculateSpeeds();
@@ -165,28 +122,6 @@ void loop(){
   nh.spinOnce();
 }
 
-void setPowerStatus(){
-  if (powerStage == false){
-    digitalWrite(powerPin, LOW);
-  } else{
-    digitalWrite(powerPin, HIGH);
-  }
-}
-void getTemperature(){
-  // Get extruder temperature and publish it in /extTemp.
-  extTemp = therm1.analog2temp();
-  
-  extTempMsg.data = extTemp;
-  extTempPub.publish( &extTempMsg );
-}
-
-void getWeight(){
-  // Get extruder temperature and publish it in /extTemp.
-  weight = analogRead(weightPin);
-  
-  weightMsg.data = weight;
-  weightPub.publish( &weightMsg );
-}
 
 void calculateSpeeds() {
   // Calculate angular speed per wheel in rad/s.

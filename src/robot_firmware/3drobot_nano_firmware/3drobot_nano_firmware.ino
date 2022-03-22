@@ -5,14 +5,14 @@
 
 int thermistorPin = A0;
 int weightPin = A1;
-int powerPin = 32;
+int powerPin = 2;
 
 bool powerStage = true;
 unsigned int cmdExtTemp = 0, extTemp = 0;
 unsigned int weight = 0;
 
 // Set up ROS node.
-ros::NodeHandle  nh;
+ros::NodeHandle  nh2;
 
 // Set up thermistor.
 thermistor therm1(thermistorPin, 7);
@@ -39,27 +39,37 @@ ros::Publisher weightPub("/weight", &weightMsg);
 void setup() {
   // Set up baud rate.
   Serial.begin(115200);
-  nh.getHardware()->setBaud(115200);
+  nh2.getHardware()->setBaud(115200);
 
   // Initialize ROS node.
-  nh.initNode();
+  nh2.initNode();
 
   // Advertise publishers.
-  nh.advertise(extTempPub);
-  nh.advertise(weightPub);
+  nh2.advertise(extTempPub);
+  nh2.advertise(weightPub);
 
   pinMode(powerPin, OUTPUT);
   digitalWrite(powerPin, HIGH);
 }
 
 void loop() {
-  nh.subscribe(temp_sub);
-  nh.subscribe(power_sub);
+  nh2.subscribe(temp_sub);
+  nh2.subscribe(power_sub);
+
+  setPowerStatus();
 
   getTemperature();
   getWeight();
 
-  nh.spinOnce();
+  nh2.spinOnce();
+}
+
+void setPowerStatus(){
+  if (powerStage == false){
+    digitalWrite(powerPin, LOW);
+  } else{
+    digitalWrite(powerPin, HIGH);
+  }
 }
 
 void getTemperature() {
