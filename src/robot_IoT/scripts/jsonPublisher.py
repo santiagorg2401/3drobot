@@ -24,12 +24,16 @@ class robot_IoT:
         self.weightSubs = rospy.Subscriber(
             '/weight', Int16, callback=self.weightCallback)
         self.powerStageSub = rospy.Subscriber(
-            '/powerStage', Bool, callback=self.poweStageCallback)
+            '/powerStage', Bool, callback=self.powerStageCallback)
 
         # Set up publisher.
         self.jsonMsg = rospy.Publisher('/jsonMsg', String, queue_size=10)
 
         self.api_url = "http://things.ubidots.com/api/v1.6/devices/3drobot/?token=BBFF-yB97DF1ZzLZbBnUR0RsVPbzqKEA3iH"
+
+        self.powerStage = None
+        self.weight = None
+        self.extTemp = None
 
     def powerStageCallback(self, data):
         self.powerStage = data.data
@@ -62,7 +66,7 @@ class robot_IoT:
         jsonMsg = json.dumps(x)
 
         response = requests.post(self.api_url, data=jsonMsg)
-        
+
         self.jsonMsg.publish(jsonMsg)
 
 

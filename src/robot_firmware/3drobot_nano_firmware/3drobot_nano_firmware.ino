@@ -62,6 +62,7 @@ void loop() {
   getWeight();
 
   nh2.spinOnce();
+  delay(10);
 }
 
 void setPowerStatus(){
