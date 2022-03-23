@@ -1,0 +1,8 @@
+prefix=/home/uao/3drobot/devel
+
+Name: robot_IoT
+Description: Description of robot_IoT
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

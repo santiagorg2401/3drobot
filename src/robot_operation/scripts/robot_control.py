@@ -4,14 +4,21 @@
 
 # Importations.
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Int16
-from std_msgs.msg import Bool
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
+from std_msgs.msg import Float32, Float64
 from cnc.gcode import GCode, GCodeException
 from cnc.coordinates import *
+from math import sin, cos, pi, atan, acos
+import cmath
+import numpy as np
 
 import sys
 import rospy
 import time
+import tf
+import os
+        
 
 class robot_control:
     def __init__(self):
@@ -21,18 +28,23 @@ class robot_control:
 
         # Set up publishers.
         self.velPub = rospy.Publisher('/cmd_vel', Twist, queue_size = 1)            # Velocity command for navigation.
-        self.tempPub = rospy.Publisher('/cmd_extTemp', Int16, queue_size = 1)     # Extruder temperature command.
-        self.zaxisPub = rospy.Publisher('/cmd_zAxisPos', Int16, queue_size = 1)    # Z axis position command.
-        self.powerStagePub = rospy.Publisher('/powerStage', Bool, queue_size = 1)
+        self.tempPub = rospy.Publisher('/cmd_extTemp', Float32, queue_size = 1)     # Extruder temperature command.
+        self.zaxisPub = rospy.Publisher('cmd_zAxisPos', Float32, queue_size = 1)    # Z axis position command.
+        self.powerStagePub = rospy.Publisher('/powerStage', Float32, queue_size = 1)
 
-        # Set up subscriber.
-        self.tempSubs = rospy.Subscriber('/extTemp', Int16, callback=self.tempCallback)   # Actual extruder temperature.
+        #Arm
+        self.joint1_arm = rospy.Publisher('/robot1/joint1_position_controller/command', Float64, queue_size=10)
+        self.joint2_arm = rospy.Publisher('/robot1/joint2_position_controller/command', Float64, queue_size=10) 
         
+        # Set up subscriber.
+        self.tempSubs = rospy.Subscriber('/extTemp', Float32, callback=self.tempCallback)   # Actual extruder temperature.
+        self.TargetReachedSub = rospy.Subscriber('/TargetReached',Float32,callback=self.TargetReachedCB)
+     
         # Create message objects.
         self.velMsg = Twist()
-        self.tempMsg = Int16()
-        self.zAxisPosMsg = Int16()
-        self.powerStageMsg = Bool()
+        self.tempMsg = Float32() 
+        self.zAxisPosMsg = Float32()
+        self.TargetReachedMsg = Float32()
 
         # Init class instances.
         self._position = Coordinates(0, 0, 0, 0)                        # TODO Replace with state estimator.
@@ -43,10 +55,30 @@ class robot_control:
         self._absoluteCoordinates = True                                # CNC code, absolute coordinates, enabled by default.
         self._plane = None                                              # CNC code, plane.
         self.linnu = 0                                                  # Line counter.
+                
+        self.vx = 0
+        self.vy = 0
+        self.a = 0
+        self.b = 1
+        self.offset= 0
+        self.offset2= 0
+        self.J = 99
+
+        self.l1arm = 280
+        self.l2arm = 140
+
+        self.dir = 0
+    def powerStagePublisher(self, state):
+        # powerStage commands publisher.
+        self.powerStageMsg = Float32(state)
+        self.powerStagePub.publish(self.powerStageMsg)
 
     def tempCallback(self, data):
         # Temperature callback function.
         self.extTemp = data.data
+
+    def TargetReachedCB(self,data):
+        self.TargetReachedMsg.data = data
 
     def tempPublisher(self, temp):
         # Temperature publisher.
@@ -57,11 +89,6 @@ class robot_control:
         # Z axis position publisher.
         self.zAxisPosMsg = pos
         self.zaxisPub.publish(self.zAxisPosMsg)
-
-    def powerStagePublisher(self, state):
-        # powerStage commands publisher.
-        self.powerStageMsg = state
-        self.powerStagePub.publish(self.powerStageMsg)
 
     def velPublisher(self, Vx, Vy):
         # Velocity publisher.
@@ -74,35 +101,104 @@ class robot_control:
         self.velMsg.angular.z = 0
 
         self.velPub.publish(self.velMsg)
-
-    def linearMovement(self, delta, velocity):
+    
+    def linearMovement(self, delta, velocity,coord,xaux,yaux):
         # Performs linear movements.
+
+        if (xaux!=0 or yaux!=0):
+            coorX=xaux
+            coorY=yaux
+            totalDist = cmath.sqrt(coorX**2+coorY**2)
+            totalDist = totalDist.real
+            #print(coorX)
+            #print(coorY)
+        else:
+            coorX=delta.x
+            coorY=delta.y
+            distance = abs(delta)
+            totalDist = distance.length()
+            #print(delta)
+
+        
+        lin_time = totalDist/velocity
+        velocity = velocity/1000
+
+        if (coorX == 0):
+            tetha = pi/2
+        else:
+            tetha = atan(abs(coorY)/abs(coorX))
+            
+        self.vx = velocity*cos(tetha)
+        self.vy = velocity*sin(tetha)
+        
+
+        if (coorX >= 0 and coorY>= 0):
+            self.vx = self.vx
+            self.vy = self.vy
+        elif (coorX < 0 and coorY >= 0):
+            self.vx = -self.vx
+            self.vy = self.vy
+        elif (coorX < 0 and coorY < 0):
+            self.vx = -self.vx
+            self.vy = -self.vy
+        elif (coorX >= 0 and coorY < 0):
+            self.vx = self.vx
+            self.vy = -self.vy
+
+        self.velMsg.linear.x = self.vx
+        self.velMsg.linear.y = self.vy
+
+        self.velPub.publish(self.velMsg)
+
+        self._position += delta
+
+        time.sleep(lin_time)
+
+        self.velPublisher(0,0)
+
+        self.zAxisPosPublisher(coord.z)
+
+        while (self.TargetReachedMsg.data != Float32(1.0)):
+            print("Moviendo Eje Z")
+            time.sleep(0.001)
+
+    def armMovement(self, delta, coord, velocity,offset):
+
         distance = abs(delta)
         totalDist = distance.length()
         lin_time = totalDist/velocity
 
-        velocity = velocity/1000
+        px = coord.x+self.offset2
+        py = coord.y-offset
+        pz = coord.z
 
-        if (delta.x > 0):
-            self.velMsg.linear.x = velocity
-        elif (delta.x == 0):
-            self.velMsg.linear.x = 0
-        elif (delta.x < 0):
-            self.velMsg.linear.x = -velocity
+        l1 = self.l1arm
+        l2 = self.l2arm
 
-        if (delta.y > 0):
-            self.velMsg.linear.y = velocity
-        elif (delta.y == 0):
-            self.velMsg.linear.y = 0
-        elif (delta.y < 0):
-            self.velMsg.linear.y = -velocity
-            
-        self.velPub.publish(self.velMsg)
-        self.zAxisPosPublisher(delta.z)
-        self._position += delta
+        print("px:",px)
+        print("py:",py)
+        print("pz:",pz)
+        print("")
+
+        tetha2 = cmath.acos((px**2+py**2-l1**2-l2**2)/(2*l1*l2))
+        if px == 0:
+            tetha1 = pi/2-cmath.atan((l2*cmath.sin(tetha2))/(l1+l2*cmath.cos(tetha2)))
+        else:
+            tetha1 = cmath.atan(py/px)-cmath.atan((l2*cmath.sin(tetha2))/(l1+l2*cmath.cos(tetha2)))
+        
+        #print("Tetha1:")
+        #print(tetha1.real)
+        #print("Tetha2:")
+        #print(tetha2.real)
+
+        self.joint1_arm.publish(tetha1.real)
+        self.joint2_arm.publish(tetha2.real)
+        self.zaxisPub.publish(pz)
+
         time.sleep(lin_time)
 
-        self.velPublisher(0,0)
+        self._position += delta
+
 
     def gcodeReader(self, file, sim):
         # Read and publish CNC code lines.
@@ -112,8 +208,10 @@ class robot_control:
 
                 self.linnu += 1
                 print(self.linnu)
+
                 if not self.gcodeParser(line, sim):
                     break
+            
         except (rospy.ROSInterruptException, KeyboardInterrupt):
             pass
         print("\r\nExiting...")
@@ -167,10 +265,11 @@ class robot_control:
                               self._convertCoordinates)
 
         if c == 'G0':  # Rapid move.
-            self.linearMovement(delta, 120)
+            self.linearMovement(delta, 120,coord,0,0)
 
         elif c == 'G1':  # Linear interpolation.
-            self.linearMovement(delta, velocity)
+            
+           self.linearMovement(delta, velocity,coord,0,0)
             
         elif c == 'G2':  # Circular interpolation, clockwise.
             # TODO Implement.
@@ -279,14 +378,44 @@ if __name__ == "__main__":
             op = input("Are you ready to print? options: yes, no, exit: ")
             if (op == "exit"):
                 sys.exit
+        
+        print("\nEncenciendo Motores Plataforma")
+        rc.powerStagePublisher(1.0)
+        time.sleep(5)
 
-        rc.powerStagePublisher(False)
+        print("\nEncenciendo Motores Brazo")
+        rc.powerStagePublisher(2.0)
+        time.sleep(5)
+        
+        print("\nApagando Motores Plataforma")
+        rc.powerStagePublisher(3.0)
+        time.sleep(5)
+
+        print("\nApagando Motores Brazo")
+        rc.powerStagePublisher(4.0)
+        time.sleep(5)
+
+        print("\nEncenciendo Motores Plataforma")
+        rc.powerStagePublisher(1.0)
+        time.sleep(5)
+
+        print("\nEncenciendo Motores Brazo")
+        rc.powerStagePublisher(2.0)
+        time.sleep(5)
+
         print("\nPrinting file on: " + file_path) 
         file = open(file_path, 'r')
         rc.gcodeReader(file, sim)
-
         print("\nFile printed.")
-        rc.powerStagePublisher(True)
+        
+        print("\nApagando Motores Plataforma")
+        rc.powerStagePublisher(3.0)
+        time.sleep(5)
+
+        print("\nApagando Motores Brazo")
+        rc.powerStagePublisher(4.0)
+        time.sleep(5)
         
     except rospy.ROSInterruptException: 
         pass
+
