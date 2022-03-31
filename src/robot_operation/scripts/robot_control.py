@@ -16,7 +16,6 @@ import numpy as np
 import sys
 import rospy
 import time
-import tf
 import os
         
 
@@ -159,6 +158,7 @@ class robot_control:
         self.zAxisPosPublisher(coord.z)
 
         while (self.TargetReachedMsg.data != Float32(1.0)):
+            
             print("Moviendo Eje Z")
             time.sleep(0.001)
 
@@ -379,42 +379,29 @@ if __name__ == "__main__":
             if (op == "exit"):
                 sys.exit
         
-        print("\nEncenciendo Motores Plataforma")
-        rc.powerStagePublisher(1.0)
-        time.sleep(5)
+    
+        # print("\nEncenciendo Motores Plataforma")
+        # rc.powerStagePublisher(1.0)
+        # time.sleep(4)
 
-        print("\nEncenciendo Motores Brazo")
-        rc.powerStagePublisher(2.0)
-        time.sleep(5)
-        
-        print("\nApagando Motores Plataforma")
-        rc.powerStagePublisher(3.0)
-        time.sleep(5)
-
-        print("\nApagando Motores Brazo")
-        rc.powerStagePublisher(4.0)
-        time.sleep(5)
-
-        print("\nEncenciendo Motores Plataforma")
-        rc.powerStagePublisher(1.0)
-        time.sleep(5)
-
-        print("\nEncenciendo Motores Brazo")
-        rc.powerStagePublisher(2.0)
-        time.sleep(5)
+        # print("\nEncenciendo Motores Brazo")
+        # rc.powerStagePublisher(2.0)
+        # time.sleep(4)
 
         print("\nPrinting file on: " + file_path) 
         file = open(file_path, 'r')
         rc.gcodeReader(file, sim)
         print("\nFile printed.")
         
+        time.sleep(2)
+
         print("\nApagando Motores Plataforma")
         rc.powerStagePublisher(3.0)
-        time.sleep(5)
+        time.sleep(4)
 
         print("\nApagando Motores Brazo")
         rc.powerStagePublisher(4.0)
-        time.sleep(5)
+        time.sleep(4)
         
     except rospy.ROSInterruptException: 
         pass

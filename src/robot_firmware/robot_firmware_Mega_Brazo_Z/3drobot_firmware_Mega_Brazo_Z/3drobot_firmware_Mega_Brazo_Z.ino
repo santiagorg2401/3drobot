@@ -40,7 +40,7 @@ AccelStepper motorZ(1, MOTOR_Z_STEP_PIN, MOTOR_Z_DIR_PIN);
 
 int speedX=100;
 int speedY=100;
-int speedZ=100;
+int speedZ=300;
 int targetX=0;
 int targetY=0;
 int targetZ=0;

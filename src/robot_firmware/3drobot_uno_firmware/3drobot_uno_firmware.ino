@@ -30,20 +30,20 @@ void temperatureCB(const std_msgs::Int16& temp_msg) {
 void powerStageCB(const std_msgs::Float32& powerStageMsg) {
   powerStage = powerStageMsg.data;
   
-  if (powerStage == 1){
-    digitalWrite(powerPinPlatform, HIGH);
+  if (powerStage == 1.0){
+    digitalWrite(powerPinPlatform, LOW);
   } 
 
-  else if(powerStage == 2){
-    digitalWrite(powerPinArm, LOW);
+  else if(powerStage == 2.0){
+    digitalWrite(powerPinArm, HIGH);
     }
     
-  else if(powerStage == 3){
-    digitalWrite(powerPinPlatform, LOW);
+  else if(powerStage == 3.0){
+    digitalWrite(powerPinPlatform, HIGH);
   }
   
-  else if(powerStage == 4){
-    digitalWrite(powerPinArm, HIGH);
+  else if(powerStage == 4.0){
+    digitalWrite(powerPinArm, LOW);
   }
 }
 
@@ -52,6 +52,7 @@ ros::Subscriber<std_msgs::Int16> temp_sub("/cmd_extTemp", &temperatureCB);
 ros::Subscriber<std_msgs::Float32> power_sub("/powerStage", &powerStageCB);
 
 // Set up publishers.
+
 std_msgs::Int16 extTempMsg;
 ros::Publisher extTempPub("/extTemp", &extTempMsg);
 
@@ -67,30 +68,32 @@ void setup() {
   nh2.initNode();
 
   // Advertise publishers.
-  nh2.advertise(extTempPub);
-  nh2.advertise(weightPub);
-
-  weightSensor.begin(DOUT,CLK);
-  weightSensor.set_scale();
-  weightSensor.tare(20);
+//  nh2.advertise(extTempPub);
+//  nh2.advertise(weightPub);
+//
+//  weightSensor.begin(DOUT,CLK);
+//  weightSensor.set_scale();
+//  weightSensor.tare(20);
 
   pinMode(powerPinPlatform, OUTPUT);
   pinMode(powerPinArm, OUTPUT);
 
-  digitalWrite(powerPinPlatform, LOW);
-  digitalWrite(powerPinArm, HIGH);
+  digitalWrite(powerPinPlatform, HIGH);
+  digitalWrite(powerPinArm, LOW);
+
+  
 }
 
 void loop() {
-  nh2.subscribe(temp_sub);
+//  nh2.subscribe(temp_sub);
   nh2.subscribe(power_sub);
 
 
-  getTemperature();
-  getWeight();
+//  getTemperature();
+//  getWeight();
 
   nh2.spinOnce();
-  delay(10);
+  
 }
 
 

@@ -74,11 +74,11 @@ void temperatureCB(const std_msgs::Float32& temp_msg){
 
 // Set up subscibers.
 ros::Subscriber<geometry_msgs::Twist> vel_sub("/cmd_vel", &velocityCB);
-ros::Subscriber<std_msgs::Float32> temp_sub("/cmd_extTemp", &temperatureCB);
-
-// Set up publishers.
-std_msgs::Float32 extTempMsg;
-ros::Publisher extTempPub("/extTemp", &extTempMsg);
+//ros::Subscriber<std_msgs::Float32> temp_sub("/cmd_extTemp", &temperatureCB);
+//
+//// Set up publishers.
+//std_msgs::Float32 extTempMsg;
+//ros::Publisher extTempPub("/extTemp", &extTempMsg);
 
 void setup(){
   // Set up baud rate.
@@ -112,7 +112,7 @@ void setup(){
   nh.initNode();
 
   // Advertise publishers.
-  nh.advertise(extTempPub);
+  //nh.advertise(extTempPub);
 
   // Set maximum speeds per motor.
   LeftFrontWheel.setMaxSpeed(2000);
@@ -124,12 +124,12 @@ void setup(){
 void loop(){
   // Subscribe from /cmd_vel and /cmd_extTemp.
   nh.subscribe(vel_sub);
-  nh.subscribe(temp_sub);
+  //nh.subscribe(temp_sub);
 
   // Get extruder temperature and publish it in /extTemp.
-  extTemp = analogRead(thermistorPin);
-  extTempMsg.data = extTemp;
-  extTempPub.publish( &extTempMsg );
+//  extTemp = analogRead(thermistorPin);
+//  extTempMsg.data = extTemp;
+//  extTempPub.publish( &extTempMsg );
 
   // Move the robot..
   calculateSpeeds();

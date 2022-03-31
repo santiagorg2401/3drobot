@@ -11,12 +11,14 @@ class calibration:
         self.zaxisPub = rospy.Publisher('/cmd_zAxisPos', Float32, queue_size = 1)
         self.joint1_arm = rospy.Publisher('/robot1/joint1_position_controller/command', Float64, queue_size=10)
         self.joint2_arm = rospy.Publisher('/robot1/joint2_position_controller/command', Float64, queue_size=10) 
-        
+        self.powerStagePub = rospy.Publisher('/powerStage', Float32, queue_size = 1)
 
         self.TargetReachedMsg = Float32()
         self.zAxisPosMsg = Float32()
         self.xAxisPosMsg = Float64()
         self.yAxisPosMsg = Float64()
+        self.powerStageMsg = Float32()
+        
 
         self.calibrationOrder()
 
@@ -26,6 +28,16 @@ class calibration:
     
     def calibrationOrder(self):
         time.sleep(4)
+        print("\nEncenciendo Motores Plataforma")
+        self.powerStageMsg = Float32(1.0)
+        self.powerStagePub.publish(self.powerStageMsg)
+        time.sleep(4)
+
+        print("\nEncenciendo Motores Brazo")
+        self.powerStageMsg = Float32(2.0)
+        self.powerStagePub.publish(self.powerStageMsg)
+        time.sleep(4)
+
         self.TargetReachedMsg.data = 0
         self.zAxisPosMsg.data = 999
         self.zaxisPub.publish(self.zAxisPosMsg)
@@ -33,24 +45,25 @@ class calibration:
             print("Calibrando eje Z")
             time.sleep(0.001)
  
-        self.TargetReachedMsg.data = 0
-        self.xAxisPosMsg.data = 999
-        self.joint1_arm.publish(self.xAxisPosMsg)
-        while (self.TargetReachedMsg.data != Float32(1.0)):
-            print("Calibrando articulacion 1")
-            time.sleep(0.001)
+        # self.TargetReachedMsg.data = 0
+        # self.xAxisPosMsg.data = 999
+        # self.joint1_arm.publish(self.xAxisPosMsg)
+        # while (self.TargetReachedMsg.data != Float32(1.0)):
+        #     print("Calibrando articulacion 1")
+        #     time.sleep(0.001)
  
-        self.TargetReachedMsg.data = 0
-        self.yAxisPosMsg.data = 999
-        self.joint2_arm.publish(self.yAxisPosMsg)
-        while (self.TargetReachedMsg.data != Float32(1.0)):
-            print("Calibrando articulacion 2")
-            time.sleep(0.001)
+        # self.TargetReachedMsg.data = 0
+        # self.yAxisPosMsg.data = 999
+        # self.joint2_arm.publish(self.yAxisPosMsg)
+        # while (self.TargetReachedMsg.data != Float32(1.0)):
+        #     print("Calibrando articulacion 2")
+        #     time.sleep(0.001)
 
 
 
 if __name__ == "__main__":
     rospy.init_node('calibration',anonymous=True)
+
     c = calibration()
     print("Calibracion Exitosa")
     
