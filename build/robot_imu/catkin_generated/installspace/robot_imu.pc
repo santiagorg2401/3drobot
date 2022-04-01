@@ -1,8 +1,0 @@
-prefix=/home/uao/3drobot/install
-
-Name: robot_imu
-Description: Description of robot_imu
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
