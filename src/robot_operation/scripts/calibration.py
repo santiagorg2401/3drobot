@@ -45,19 +45,19 @@ class calibration:
             print("Calibrando eje Z")
             time.sleep(0.001)
  
-        # self.TargetReachedMsg.data = 0
-        # self.xAxisPosMsg.data = 999
-        # self.joint1_arm.publish(self.xAxisPosMsg)
-        # while (self.TargetReachedMsg.data != Float32(1.0)):
-        #     print("Calibrando articulacion 1")
-        #     time.sleep(0.001)
+        self.TargetReachedMsg.data = 0
+        self.xAxisPosMsg.data = 999
+        self.joint1_arm.publish(self.xAxisPosMsg)
+        while (self.TargetReachedMsg.data != Float32(1.0)):
+            print("Calibrando articulacion 1")
+            time.sleep(0.001)
  
-        # self.TargetReachedMsg.data = 0
-        # self.yAxisPosMsg.data = 999
-        # self.joint2_arm.publish(self.yAxisPosMsg)
-        # while (self.TargetReachedMsg.data != Float32(1.0)):
-        #     print("Calibrando articulacion 2")
-        #     time.sleep(0.001)
+        self.TargetReachedMsg.data = 0
+        self.yAxisPosMsg.data = 999
+        self.joint2_arm.publish(self.yAxisPosMsg)
+        while (self.TargetReachedMsg.data != Float32(1.0)):
+            print("Calibrando articulacion 2")
+            time.sleep(0.001)
 
 
 

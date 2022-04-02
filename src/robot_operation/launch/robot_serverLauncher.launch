@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="file_path" doc="Input a valid file path to a Gcode file."/>
+    <arg name="sim" default="1" doc="Gazebo simulation parameter." />
+
+    <group if="$(arg sim)">
+        <include file="$(find robot_gazebo)/launch/display_g.launch" />
+    </group>
+
+    <node name="serial_node_mega_platform" pkg="rosserial_python" type="serial_node.py" args="_port:=/dev/ttyACM1 _baud:=115200" output="screen"/>
+    <node name="serial_node_mega_arm" pkg="rosserial_python" type="serial_node.py" args="_port:=/dev/ttyUSB0 _baud:=115200" output="screen"/>
+
+    <node name="serial_node_uno" pkg="rosserial_python" type="serial_node.py" args="_port:=/dev/ttyACM0 _baud:=115200" output="screen"/>
+    <node name="robot_server" pkg="robot_operation" type="robot_server.py" args="$(arg file_path) $(arg sim)" output="screen"/>
+
+</launch>

@@ -269,7 +269,8 @@ class robot_control:
 
         elif c == 'G1':  # Linear interpolation.
             
-           self.linearMovement(delta, velocity,coord,0,0)
+           #self.linearMovement(delta, velocity,coord,0,0)
+           self.armMovement(delta,coord,velocity,0)
             
         elif c == 'G2':  # Circular interpolation, clockwise.
             # TODO Implement.

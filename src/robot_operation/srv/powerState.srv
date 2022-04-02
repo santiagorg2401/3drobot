@@ -1,0 +1,4 @@
+bool platform
+bool arm
+---
+bool finished
