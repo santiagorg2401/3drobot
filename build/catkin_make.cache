@@ -1,2 +1,0 @@
-robot_IoT:robot_description:robot_gazebo:robot_imu:robot_operation
--DCATKIN_DEVEL_PREFIX=/home/uao/3drobot/devel -DCMAKE_INSTALL_PREFIX=/home/uao/3drobot/install -G Unix Makefiles
