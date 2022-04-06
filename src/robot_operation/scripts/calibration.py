@@ -31,33 +31,38 @@ class calibration:
         print("\nEncenciendo Motores Plataforma")
         self.powerStageMsg = Float32(1.0)
         self.powerStagePub.publish(self.powerStageMsg)
-        time.sleep(4)
+        time.sleep(2)
 
         print("\nEncenciendo Motores Brazo")
         self.powerStageMsg = Float32(2.0)
         self.powerStagePub.publish(self.powerStageMsg)
-        time.sleep(4)
+        time.sleep(2)
 
         self.TargetReachedMsg.data = 0
         self.zAxisPosMsg.data = 999
         self.zaxisPub.publish(self.zAxisPosMsg)
+        print("Calibrando eje Z")
         while (self.TargetReachedMsg.data != Float32(1.0)):
-            print("Calibrando eje Z")
-            time.sleep(0.001)
+            # print("Calibrando eje Z")
+            time.sleep(0.000001)
  
         self.TargetReachedMsg.data = 0
         self.xAxisPosMsg.data = 999
         self.joint1_arm.publish(self.xAxisPosMsg)
+        print("Calibrando articulacion 1")
         while (self.TargetReachedMsg.data != Float32(1.0)):
-            print("Calibrando articulacion 1")
-            time.sleep(0.001)
+            # print("Calibrando articulacion 1")
+            # time.sleep(0.001)
+            time.sleep(0.000001)
  
         self.TargetReachedMsg.data = 0
         self.yAxisPosMsg.data = 999
         self.joint2_arm.publish(self.yAxisPosMsg)
+        print("Calibrando articulacion 2")
         while (self.TargetReachedMsg.data != Float32(1.0)):
-            print("Calibrando articulacion 2")
-            time.sleep(0.001)
+            # print("Calibrando articulacion 2")
+            # time.sleep(0.001)
+            time.sleep(0.000001)
 
 
 

@@ -4,8 +4,6 @@
 
 # Importations.
 from geometry_msgs.msg import Twist
-from nav_msgs.msg import Odometry
-from geometry_msgs.msg import Point, Pose, Quaternion, Twist, Vector3
 from std_msgs.msg import Float32, Float64
 from cnc.gcode import GCode, GCodeException
 from cnc.coordinates import *
@@ -155,12 +153,11 @@ class robot_control:
 
         self.velPublisher(0,0)
 
-        self.zAxisPosPublisher(coord.z)
 
+        self.zAxisPosPublisher(coord.z)
+        print("Moviendo Eje Z")
         while (self.TargetReachedMsg.data != Float32(1.0)):
-            
-            print("Moviendo Eje Z")
-            time.sleep(0.001)
+            time.sleep(0.000001)
 
     def armMovement(self, delta, coord, velocity,offset):
 
@@ -185,19 +182,27 @@ class robot_control:
             tetha1 = pi/2-cmath.atan((l2*cmath.sin(tetha2))/(l1+l2*cmath.cos(tetha2)))
         else:
             tetha1 = cmath.atan(py/px)-cmath.atan((l2*cmath.sin(tetha2))/(l1+l2*cmath.cos(tetha2)))
-        
-        #print("Tetha1:")
-        #print(tetha1.real)
-        #print("Tetha2:")
-        #print(tetha2.real)
+
 
         self.joint1_arm.publish(tetha1.real)
+        time.sleep(0.001)
         self.joint2_arm.publish(tetha2.real)
-        self.zaxisPub.publish(pz)
-
-        time.sleep(lin_time)
+        
+        #time.sleep(lin_time)
+        print("Moviendo Brazo")
+        print("Tetha1:",tetha1.real)
+        print("Tetha2:",tetha2.real)   
+        while (self.TargetReachedMsg.data != Float32(1.0)):
+    
+            time.sleep(0.000001)
 
         self._position += delta
+
+        self.zaxisPub.publish(pz)
+
+        print("Moviendo Eje Z")
+        while (self.TargetReachedMsg.data != Float32(1.0)):
+            time.sleep(0.000001)
 
 
     def gcodeReader(self, file, sim):

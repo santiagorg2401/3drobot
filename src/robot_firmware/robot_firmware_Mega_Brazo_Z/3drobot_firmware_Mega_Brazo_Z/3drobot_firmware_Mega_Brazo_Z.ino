@@ -38,8 +38,8 @@ AccelStepper motorX(1, MOTOR_X_STEP_PIN, MOTOR_X_DIR_PIN);
 AccelStepper motorY(1, MOTOR_Y_STEP_PIN, MOTOR_Y_DIR_PIN); 
 AccelStepper motorZ(1, MOTOR_Z_STEP_PIN, MOTOR_Z_DIR_PIN); 
 
-int speedX=100;
-int speedY=100;
+int speedX=300;
+int speedY=300;
 int speedZ=300;
 int targetX=0;
 int targetY=0;
@@ -56,18 +56,15 @@ unsigned char calcomp=0;
 ros::NodeHandle  nh;
 
 void xCB(const std_msgs::Float64& x_msg){
-  targetX=x_msg.data/1.8;
+  targetX=(x_msg.data*180/pi)/1.8;
 
   if(x_msg.data==999){
       CalibrationX();
     }
-  else{
-    goToTargetXY(); 
-  }
 }
 
 void yCB(const std_msgs::Float64& y_msg){
-  targetY=y_msg.data/1.8;
+  targetY=(y_msg.data*180/pi)/1.8;
 
   if(y_msg.data==999){
       CalibrationY();
@@ -236,7 +233,14 @@ void goToTargetXY(){
       motorY.setSpeed(-speedY);
       motorY.runSpeed();
     }
+    
   } 
+
+  motorX.setSpeed(0);
+  motorX.runSpeed();
+
+  motorY.setSpeed(0);
+  motorY.runSpeed();
 
   TargetReachedMsg.data = 1;
   TargetReachedPub.publish( &TargetReachedMsg );
