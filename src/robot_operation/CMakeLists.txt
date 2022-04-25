@@ -57,8 +57,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate services in the 'srv' folder
 add_service_files(
   FILES
-  accesories.srv
-  powerStage.srv
+  temperature.srv
+  powerState.srv
 )
 
 ## Generate actions in the 'action' folder
